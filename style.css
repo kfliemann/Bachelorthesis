@@ -1,0 +1,38 @@
+.main {
+    margin-left: 1rem;
+    margin-right: 1rem;
+
+    .headline-items {
+        padding-bottom: 2.5rem;
+    }
+
+    .line-items {
+        padding-bottom: 2.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    #serveroutput {
+        white-space: pre-wrap;
+        font-size: xx-large;
+        height: 70vh;
+        resize: none;
+    }
+
+    .tab-sub-headline {
+        margin-bottom: 2rem;
+    }
+
+    .createButton {
+        margin-top: 1rem;
+    }
+
+    #errorQuestion {
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+        display: none !important
+    }
+
+    .question-header {
+        margin-top: 3rem;
+    }
+}

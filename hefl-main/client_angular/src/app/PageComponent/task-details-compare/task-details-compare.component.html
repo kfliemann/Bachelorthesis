@@ -1,0 +1,41 @@
+<div class="row task-details-compare-div" id="task-details-compare-div">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <h2 class="versionLabel" for="versionSelectLeft">Choose an initial version:</h2>
+                <select id="versionSelectLeft" [(ngModel)]="taskDetailsLeft.selected_version"
+                    (ngModelChange)="onVersionChange(0)">
+                    <ng-container *ngFor="let versionLeft of taskDetailsLeft.versions">
+                        <option [ngValue]="versionLeft.version"
+                            [selected]="versionLeft.version === taskDetailsLeft.question_version">
+                            {{ versionLeft.version }}
+                            <span *ngIf="versionLeft.isApproved">&#10004;</span>
+                        </option>
+                    </ng-container>
+                </select>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row">
+                <h2 class="versionLabel" for="versionSelectRight">Choose a version to compare:</h2>
+                <select id="versionSelectRight" [(ngModel)]="taskDetailsRight.selected_version"
+                    (ngModelChange)="onVersionChange(1)">
+                    <ng-container *ngFor="let versionRight of taskDetailsRight.versions">
+                        <option *ngIf="versionRight.version >= taskDetailsLeft.selected_version"
+                            [ngValue]="versionRight.version"
+                            [selected]="versionRight.version === taskDetailsRight.question_version">
+                            {{ versionRight.version }}
+                            <span *ngIf="versionRight.isApproved">&#10004;</span>
+                        </option>
+                    </ng-container>
+                </select>
+            </div>
+        </div>
+        <div class="col-auto" id="compare-button">
+            <button mat-raised-button color="primary" (click)="closeCompare()">Close</button>
+        </div>
+    </div>
+    <div class="row">
+        <app-task-details-monaco #taskDetailsMonaco style="padding-left: 0px;"></app-task-details-monaco>
+    </div>
+</div>

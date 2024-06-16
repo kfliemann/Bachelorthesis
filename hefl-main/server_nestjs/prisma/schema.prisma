@@ -1,0 +1,449 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum GlobalRole {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum contentElementType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+  CODE
+  PDF
+}
+
+model User {
+  id                   Int                  @id @default(autoincrement())
+  session_cookie       String?
+  email                String               @unique
+  firstname            String
+  lastname             String
+  password             String
+  createdAt            DateTime             @default(now())
+  globalRole           GlobalRole           @default(STUDENT)
+  modules              Module[]
+  currentConcept       ConceptNode?         @relation(fields: [currentconceptNodeId], references: [id], onDelete: SetNull) // last concept the user has visited
+  currentconceptNodeId Int?
+  conceptUser          UserConcept[]
+  question             Question[]
+  codeSubmission       CodeSubmission[]
+  codeSubmissionFile   CodeSubmissionFile[]
+  anonymousUser        anonymousUser[]
+  userMCAnswer         UserMCAnswer[]
+  skillLevel           Int                  @default(0)
+}
+
+model Module {
+  id          Int                 @id @default(autoincrement())
+  name        String              @unique
+  description String
+  subjects    Subject[]
+  users       User[]
+  goals       ModuleConceptGoal[]
+}
+
+// the level goal for a concept in a module
+model ModuleConceptGoal {
+  id            Int         @id @default(autoincrement())
+  module        Module      @relation(fields: [moduleId], references: [id])
+  moduleId      Int
+  conceptNode   ConceptNode @relation(fields: [conceptNodeId], references: [id])
+  conceptNodeId Int
+  level         Int
+}
+
+// n to n relation between subject and module is implicit
+model Subject {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String
+  modules     Module[]
+}
+
+// a concept graph defines the lowest level of nodes
+model ConceptGraph {
+  id     Int          @id @default(autoincrement())
+  name   String
+  root   ConceptNode? @relation(fields: [rootId], references: [id], onDelete: Cascade)
+  rootId Int?         @unique // points to parent node that contains all other nodes
+}
+
+// A Concept node is a node in the concept graph
+model ConceptNode {
+  id                Int                 @id @default(autoincrement())
+  name              String              @unique
+  description       String
+  myParents         ConceptFamily[]     @relation("childConcept") // we have to name the relation because we have two relations between the same models
+  myChildren        ConceptFamily[]     @relation("parentConcept")
+  mySuccessors      ConceptEdge[]       @relation("prerequisiteConcept")
+  myPrerequisites   ConceptEdge[]       @relation("successorConcept")
+  childEdges        ConceptEdge[]       @relation("conceptEdgeParent") // makes it easier to construct the graph
+  requiredBy        Requirement[]
+  trainedBy         Training[]
+  currentConceptFor User[]
+  userConcepts      UserConcept[]
+  moduleGoals       ModuleConceptGoal[]
+  conceptGraph      ConceptGraph?
+  conceptGraphId    Int? // is only set for the ancestor node
+  Discussion        Discussion[]
+  question          Question[]
+}
+
+// defines one parent-child relationship in the concept graph
+model ConceptFamily {
+  id       Int         @id @default(autoincrement())
+  child    ConceptNode @relation("childConcept", fields: [childId], references: [id], onDelete: Cascade) // we have to name the relation because we have two relations between the same models
+  childId  Int
+  parent   ConceptNode @relation("parentConcept", fields: [parentId], references: [id], onDelete: Cascade) // cannot delete a node with children
+  parentId Int
+}
+
+// defines one prerequisite relationship in the concept graph
+model ConceptEdge {
+  id             Int         @id @default(autoincrement())
+  prerequisite   ConceptNode @relation("prerequisiteConcept", fields: [prerequisiteId], references: [id], onDelete: Cascade)
+  prerequisiteId Int
+  successor      ConceptNode @relation("successorConcept", fields: [successorId], references: [id], onDelete: Cascade)
+  successorId    Int
+  parent         ConceptNode @relation("conceptEdgeParent", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId       Int
+}
+
+model ContentNode {
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  description     String
+  prerequisites   ContentEdge[]    @relation("prerequisiteContent")
+  successors      ContentEdge[]    @relation("successorContent")
+  requires        Requirement[]
+  trains          Training[]
+  discussions     Discussion[]
+  contentElements ContentElement[]
+}
+
+model ContentEdge {
+  id             Int         @id @default(autoincrement())
+  prerequisite   ContentNode @relation("prerequisiteContent", fields: [prerequisiteId], references: [id], onDelete: Cascade)
+  prerequisiteId Int
+  successor      ContentNode @relation("successorContent", fields: [successorId], references: [id], onDelete: Cascade)
+  successorId    Int
+}
+
+// the concepts that should be known to understand or solve a content node
+model Requirement {
+  id            Int         @id @default(autoincrement())
+  contentNode   ContentNode @relation(fields: [contentNodeId], references: [id], onDelete: Cascade)
+  contentNodeId Int
+  conceptNode   ConceptNode @relation(fields: [conceptNodeId], references: [id], onDelete: Cascade)
+  conceptNodeId Int
+}
+
+// a piece of content trains one (or more) concepts
+// for example a task trains the concept of "while loop" and "functions"
+// it can also award a competence level for that concept
+model Training {
+  id            Int         @id @default(autoincrement())
+  contentNode   ContentNode @relation(fields: [contentNodeId], references: [id], onDelete: Cascade)
+  contentNodeId Int
+  conceptNode   ConceptNode @relation(fields: [conceptNodeId], references: [id], onDelete: Cascade)
+  conceptNodeId Int
+  awards        Int?
+}
+
+// a user can have a competence level for a concept
+// for example a user can have a level 3 for the concept "while loop"
+// "expanded" saves the state of the concept graph between sessions
+model UserConcept {
+  id            Int         @id @default(autoincrement())
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        Int
+  concept       ConceptNode @relation(fields: [conceptNodeId], references: [id], onDelete: Cascade)
+  conceptNodeId Int
+  level         Int?
+  expanded      Boolean // remembers if the concept was expanded in the concept graph
+}
+
+// for example a MC question or a video or a piece of text
+model ContentElement {
+  id            Int                @id @default(autoincrement())
+  type          contentElementType
+  position      Int // position in the content node
+  title         String?
+  text          String?
+  contentNode   ContentNode        @relation(fields: [contentNodeId], references: [id], onDelete: Cascade)
+  contentNodeId Int
+  file          File?              @relation(fields: [fileId], references: [id])
+  fileId        Int?               @unique
+  question      Question?          @relation(fields: [questionId], references: [id])
+  questionId    Int?               @unique
+}
+
+model File {
+  id               Int             @id @default(autoincrement())
+  uniqueIdentifier String          @unique
+  name             String
+  path             String
+  type             String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  question         Question?       @relation(fields: [questionId], references: [id])
+  questionId       Int?
+  MCAnswer         MCOption?       @relation(fields: [mCAnswerId], references: [id])
+  mCAnswerId       Int?
+  contentElement   ContentElement?
+  contentElementId Int?
+}
+
+// Feedback which the users will get after answering a question
+model Feedback {
+  id         Int      @id @default(autoincrement())
+  name       String
+  text       String
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id])
+}
+
+model Question {
+  id                         Int               @id @default(autoincrement())
+  createdAt                  DateTime          @default(now())
+  updatedAt                  DateTime          @updatedAt
+  name                       String?
+  description                String?
+  score                      Int?
+  type                       String
+  author                     User              @relation(fields: [authorId], references: [id])
+  authorId                   Int
+  text                       String?
+  feedbacks                  Feedback[]
+  files                      File[]
+  //toDo: connect to different mediatypes Evelyn
+  codingQuestions            CodingQuestion?
+  contentElement             ContentElement?
+  contentElementId           Int?
+  conceptNode                ConceptNode       @relation(fields: [conceptNodeId], references: [id])
+  conceptNodeId              Int
+  QuestionVersionAsQuestion  QuestionVersion[] @relation("QuestionToQuestionVersion")
+  QuestionVersionAsSuccessor QuestionVersion[] @relation("QuestionToSuccessorQuestionVersion")
+}
+
+model QuestionVersion {
+  id          Int          @id @default(autoincrement())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  question    Question?    @relation("QuestionToQuestionVersion", fields: [questionId], references: [id])
+  questionId  Int
+  successor   Question?    @relation("QuestionToSuccessorQuestionVersion", fields: [successorId], references: [id])
+  successorId Int?
+  version     Int
+  isApproved  Boolean      @default(false)
+  MCQuestion  MCQuestion[]
+}
+
+//********************************************************************************************* Begin MC-Question
+model MCQuestion {
+  id                Int                @id @default(autoincrement())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  questionVersion   QuestionVersion    @relation(fields: [questionVersionId], references: [id])
+  questionVersionId Int
+  shuffleoptions    Boolean            @default(true)
+  isSC              Boolean
+  userMCAnswers     UserMCAnswer[]
+  MCQuestionOption  MCQuestionOption[]
+}
+
+model MCOption {
+  id                   Int                    @id @default(autoincrement())
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  text                 String
+  files                File[]
+  is_correct           Boolean
+  UserMCOptionSelected UserMCOptionSelected[]
+  MCQuestionOption     MCQuestionOption[]
+}
+
+model MCQuestionOption {
+  id           Int        @id @default(autoincrement())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  question     MCQuestion @relation(fields: [mcQuestionId], references: [id])
+  mcQuestionId Int
+  option       MCOption   @relation(fields: [mcOptionId], references: [id])
+  mcOptionId   Int
+}
+
+model UserMCAnswer {
+  id                   Int                    @id @default(autoincrement())
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  user                 User                   @relation(fields: [userId], references: [id])
+  userId               Int
+  question             MCQuestion             @relation(fields: [mcQuestionId], references: [id])
+  isCorrectAnswer      Boolean?
+  pointsScored         Float
+  mcQuestionId         Int
+  UserMCOptionSelected UserMCOptionSelected[]
+}
+
+model UserMCOptionSelected {
+  id             Int          @id @default(autoincrement())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  userMCAnswer   UserMCAnswer @relation(fields: [userMCAnswerId], references: [id])
+  userMCAnswerId Int
+  mcOption       MCOption     @relation(fields: [mcOptionId], references: [id])
+  mcOptionId     Int
+}
+
+//********************************************************************************************* End MC-Question
+
+//********************************************************************************************* Begin Coding Questions
+model CodingQuestion {
+  id              Int              @id @default(autoincrement())
+  count_InputArgs Int
+  text            String           @db.Text
+  textHTML        String           @db.Text
+  mainFileName    String
+  question        Question         @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId      Int              @unique
+  codeGerueste    CodeGeruest[]
+  automatedTests  AutomatedTest[]
+  codeSubmissions CodeSubmission[]
+}
+
+model CodeGeruest {
+  id               Int            @id @default(autoincrement())
+  codingQuestion   CodingQuestion @relation(fields: [codingQuestionId], references: [id], onDelete: Cascade)
+  codingQuestionId Int
+  codeFileName     String
+  code             String         @db.Text
+  language         String?
+}
+
+model AutomatedTest {
+  id             Int            @id @default(autoincrement())
+  code           String         @db.Text
+  testFileName   String?
+  language       String?
+  questionId     Int
+  codingQuestion CodingQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  testcases      Testcase[]
+}
+
+model Testcase {
+  id              Int           @id @default(autoincrement())
+  input           String
+  expectedOutput  String
+  automatedTest   AutomatedTest @relation(fields: [automatedTestId], references: [id], onDelete: Cascade)
+  automatedTestId Int
+}
+
+model CodeSubmission {
+  id                  Int                  @id @default(autoincrement())
+  code                String               @db.Text
+  updatedAt           DateTime             @updatedAt
+  createdAt           DateTime             @default(now())
+  compilerOutput      String?              @db.Text
+  compilerError       String?              @db.Text
+  compilerResponse    String?              @db.Text
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              Int
+  codingQuestion      CodingQuestion       @relation(fields: [codingQuestionId], references: [id], onDelete: Cascade)
+  codingQuestionId    Int
+  CodeSubmissionFiles CodeSubmissionFile[]
+  kiFeedback          KIFeedback[]
+}
+
+// One CodeSubmission can have multiple Files (e.g. multiple Java Classes)
+model CodeSubmissionFile {
+  id               Int            @id @default(autoincrement())
+  updatedAt        DateTime       @updatedAt
+  createdAt        DateTime       @default(now())
+  version          Int
+  code             String?        @db.Text
+  language         String?
+  codeFileName     String?
+  user             User           @relation(fields: [userId], references: [id])
+  userId           Int
+  CodeSubmission   CodeSubmission @relation(fields: [CodeSubmissionId], references: [id], onDelete: Cascade)
+  CodeSubmissionId Int
+}
+
+model KIFeedback {
+  id                Int            @id @default(autoincrement())
+  updatedAt         DateTime       @updatedAt
+  createdAt         DateTime       @default(now())
+  model             String
+  text              String         @db.Text
+  ratingByStudent   Int?
+  feedbackByStudent String?        @db.Text
+  submission        CodeSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  submissionId      Int
+}
+
+//********************************************************************************************* End Coding Questions
+
+//********************************************************************************************* Begin Discussion
+model anonymousUser {
+  id            Int         @id @default(autoincrement())
+  user          User        @relation(fields: [userId], references: [id])
+  userId        Int
+  anonymousName String      @default("Anonymchen")
+  Discussion    Discussion?
+  Message       Message[]
+  Vote          Vote[]
+}
+
+model Discussion {
+  id            Int           @id @default(autoincrement())
+  title         String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  contentNode   ContentNode?  @relation(fields: [contentNodeId], references: [id])
+  contentNodeId Int?
+  conceptNode   ConceptNode   @relation(fields: [conceptNodeId], references: [id])
+  conceptNodeId Int
+  author        anonymousUser @relation(fields: [authorId], references: [id])
+  authorId      Int           @unique
+  isSolved      Boolean       @default(false)
+  messages      Message[]
+}
+
+model Message {
+  id           Int           @id @default(autoincrement())
+  text         String        @db.VarChar(2000)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  author       anonymousUser @relation(fields: [authorId], references: [id])
+  authorId     Int
+  isInitiator  Boolean       @default(false) // true if this is the authors discussion question
+  isSolution   Boolean       @default(false)
+  discussion   Discussion    @relation(fields: [discussionId], references: [id])
+  discussionId Int
+  votes        Vote[]
+}
+
+model Vote {
+  id        Int           @id @default(autoincrement())
+  isUpvote  Boolean       @default(true) // true if upvote, false if downvote
+  author    anonymousUser @relation(fields: [authorId], references: [id])
+  authorId  Int
+  message   Message       @relation(fields: [messageId], references: [id])
+  messageId Int
+}
+
+//********************************************************************************************* End Discussion

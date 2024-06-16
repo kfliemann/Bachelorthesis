@@ -1,0 +1,135 @@
+.task-details-inner-div {
+    position: relative;
+
+    #task-details-inner{
+        padding-right: 2.5rem;
+    }
+
+    #task-details-row {
+        padding-left: 1rem;
+    }
+
+    h1 {
+        font-size: xx-large;
+    }
+
+    h2 {
+        margin-bottom: 0;
+    }
+
+    p {
+        font-size: x-large;
+    }
+
+    .header {
+        margin-top: 2rem;
+    }
+
+    #task-name {
+        margin-bottom: 2.5rem;
+    }
+
+    .row {
+        margin-bottom: 1rem;
+    }
+
+    .row .row-head {
+        margin-bottom: 1rem;
+        position: relative;
+    }
+
+    .details-container {
+        margin-bottom: 2.5rem;
+    }
+
+    table {
+        font-size: large;
+    }
+
+    .answer-table {
+        margin-bottom: 4rem;
+        padding-top: 2rem;
+    }
+
+    .task-details-edit-div {
+        display: none;
+    }
+
+    .versionLabel {
+        font-size: large;
+    }
+
+    #edit-button {
+        .row {
+            margin-bottom: 1.3rem;
+        }
+    }
+
+    #question_score {
+        h4 {
+            font-size: 21px;
+        }
+    }
+
+
+    .gradient-background {
+        position: relative;
+        width: 100%;
+        height: 3vh;
+        background: linear-gradient(to right, red 0%, orange 25%, green 50%, orange 75%, red 100%);
+    }
+
+    .itemDifficulty {
+        height: 100%;
+
+        h2 {
+            text-align: left;
+        }
+    }
+
+    .itemDifficultyBorder {
+        border-right: 4px solid black;
+        height: 3vh;
+        position: absolute;
+    }
+
+    .scaleData {
+        display: flex;
+        justify-content: space-between;
+
+        p {
+            font-size: medium;
+        }
+    }
+
+    .difficultyProgressBar {
+        display: flex;
+        justify-content: center;
+    }
+
+    #difficultyProgressBarBottom {
+        margin-top: 12px;
+    }
+
+    .analyticsContainer {
+        padding-top: 10vh;
+    }
+
+    .col-auto {
+        .versionLabel {
+            font-size: large;
+        }
+
+        .row {
+            margin-bottom: 1rem;
+        }
+    }
+
+    .tooltip-icon {
+        position: absolute;
+        display: flex;
+        justify-content: end;
+    }
+
+
+}

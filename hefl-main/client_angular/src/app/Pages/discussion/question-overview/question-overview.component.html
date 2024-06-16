@@ -1,0 +1,10 @@
+<div class="content mat-elevation-z8">
+  <h1>Beiträge</h1>
+  <div class="container">
+    <div *ngIf="visibleDiscussions && visibleDiscussions.discussions && visibleDiscussions.discussions.length > 0">
+      <app-question *ngFor="let question of visibleDiscussions.discussions" [questionData]="question"></app-question>
+    </div>
+  </div>
+</div>
+
+<!-- TODO: Wechsel zwischen alle und meine Beitraege -->

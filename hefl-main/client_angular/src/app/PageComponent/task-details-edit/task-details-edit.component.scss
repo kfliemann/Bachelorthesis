@@ -1,0 +1,61 @@
+.task-details-edit-div {
+    display:none;
+
+    h1 {
+        font-size: xx-large;
+    }
+
+    h2 {
+        margin-bottom: 0;
+    }
+
+    p {
+        font-size: x-large;
+    }
+
+    .header {
+        margin-top: 2rem;
+    }
+
+    #task-name {
+        margin-bottom: 2.5rem;
+    }
+
+    .row {
+        margin-bottom: 1rem;
+    }
+
+    .header-end {
+        margin-bottom: 4rem;
+    }
+
+    .optionTable {
+        margin-top: 3rem;
+    }
+
+    table {
+        font-size: large;
+    }
+
+    .option-table {
+        margin-bottom: 4rem;
+    }
+
+    .task-details-edit-div {
+        display: none;
+    }
+
+    textarea{
+        min-width: 10rem;
+        min-height: 10rem;
+        width: 40em;
+        height: 10em;
+    }
+
+    .option-row{
+        margin-bottom: 2rem;
+    }
+    .questions-row{
+        margin-bottom: 2rem;
+    }
+}

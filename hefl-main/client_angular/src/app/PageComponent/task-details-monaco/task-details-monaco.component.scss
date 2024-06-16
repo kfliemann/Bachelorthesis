@@ -1,0 +1,48 @@
+.monaco-editor-outer {
+    text-align: left !important;
+    padding-left: 0px;
+    
+    textarea {
+        pointer-events: none;
+        background-color: red;
+    }
+
+    .monaco-editor {
+        height: 100%;
+        width: 100%
+    }
+
+    .monaco-editor-div {
+        height: 8rem;
+        //width: 20rem;
+    }
+
+    .monaco-editor-div-option {
+        height: 10rem;
+        //width: 20rem;
+    }
+
+    .editor-wrapper {
+        margin-bottom: 2rem;
+    }
+
+    h1 {
+        font-size: xx-large;
+    }
+
+    h2 {
+        margin-bottom: 0;
+    }
+
+    p {
+        font-size: x-large;
+    }
+
+    table {
+        font-size: large;
+    }
+
+    .versionLabel {
+        font-size: large;
+    }
+}

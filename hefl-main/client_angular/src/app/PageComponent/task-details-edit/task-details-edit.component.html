@@ -1,0 +1,73 @@
+<div class="row task-details-edit-div" id="task-details-edit-div">
+    <div class="col questions-row" id="task-details-inner">
+        <h1>Questions</h1>
+        <span id="question-id" style="display:none;">id</span>
+        <div class="row">
+            <div class="col">
+                <h2 id="question_name">Question Name</h2>
+            </div>
+            <div class="col">
+                <textarea type="text" name="question_name_input" [(ngModel)]="taskDetails.question_name"
+                    id="question_name_input">{{ taskDetails.question_name }}</textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h2 id="question_text" class="header-end">Question Text</h2>
+            </div>
+            <div class="col">
+                <textarea type="text" name="question_text_input" [(ngModel)]="taskDetails.question_text"
+                    id="question_text_input">{{ taskDetails.question_text }}</textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h2 id="question_score" class="header-end">Question Score</h2>
+            </div>
+            <div class="col">
+                <select name="question_score" [(ngModel)]="taskDetails.question_score" id="question_score">
+                    <option *ngFor="let option of scoreOptions" [value]="option">{{ option }}</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <button mat-raised-button color="primary" (click)="updateQuestion(taskDetails.mcQuestion_id)">Update
+                Questions</button>
+        </div>
+    </div>
+    <div class="col">
+        <h1>Options</h1>
+        <div class="row option-row" *ngFor="let mcOption of taskDetails.mcOption_details; let i = index">
+            <div class="col">
+                <span id="option_id" [attr.mcOptionId]="mcOption.mcOption_id" style="display: none;"></span>
+                <h2 class="header-end">Option {{ i + 1 }}</h2>
+            </div>
+            <div class="col">
+                <h2 class="">Option type</h2>
+                <select name="option{{mcOption.mcOption_id}}" id="mcOptionId{{mcOption.mcOption_id}}"
+                    [(ngModel)]="mcOption.mcOption_isCorrect">
+                    <option [value]="1">Correct</option>
+                    <option [value]="0">False</option>
+                </select>
+            </div>
+            <div class="col">
+                <textarea type="text" name="" id="option_name_input" [(ngModel)]="mcOption.mcOption_text"></textarea>
+            </div>
+            <div class="col">
+                <button mat-raised-button color="primary" (click)="deleteOption(mcOption.mcOption_id)">Delete
+                    Option</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <button mat-raised-button color="primary" (click)="addOption()">Add Option</button>
+            </div>
+            <div class="col">
+                <button mat-raised-button color="primary" (click)="saveOptions()">Save Options</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-auto" id="edit-button">
+        <button mat-raised-button color="primary" (click)="closeEdit()">Close</button>
+    </div>
+</div>

@@ -1,0 +1,26 @@
+<div class=" content mat-elevation-z8">
+  <h1>Concept Overview</h1>
+  <h3>Testdata currently only for Arrays (in Graph) -> then Card for Content Node 1</h3>
+  active Concept Node Id: {{activeConceptNode.databaseId}} <br>
+
+  <mat-tab-group animationDuration="0ms">
+    <mat-tab label="Content">
+      <app-contentBoard [contentsForActiveConceptNode]="contentsForActiveConceptNode"></app-contentBoard>
+      <!--Communication to Child-Component-->
+    </mat-tab>
+
+    <mat-tab label="Aufgaben">
+      Here we will show Cards for each connected Task, which will open them (for example Coding Task in Tutor-Kai)
+    </mat-tab>
+
+    <mat-tab label="Kompetenzen">
+      <app-competencies [contentsForActiveConceptNode]="contentsForActiveConceptNode"></app-competencies>
+    </mat-tab>
+
+    <mat-tab label="Diskussion">
+      <app-discussion [contentsForActiveConceptNode]="contentsForActiveConceptNode"
+        [activeConceptNode]="activeConceptNode"></app-discussion>
+    </mat-tab>
+  </mat-tab-group>
+
+</div>

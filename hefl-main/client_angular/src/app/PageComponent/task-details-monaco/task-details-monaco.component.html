@@ -1,0 +1,140 @@
+<div class="container-fluid monaco-editor-outer">
+    <div class="row editor-wrapper">
+        <h2>Question Name</h2>
+        <div class="monaco-editor-div">
+            <ngx-monaco-diff-editor class="monaco-editor" [options]="options" [originalModel]="originalQuestion"
+                [modifiedModel]="modifiedQuestion">
+            </ngx-monaco-diff-editor>
+        </div>
+
+        <h2>Question Text</h2>
+        <div class="monaco-editor-div">
+            <ngx-monaco-diff-editor class="monaco-editor" [options]="options" [originalModel]="originalText"
+                [modifiedModel]="modifiedText"></ngx-monaco-diff-editor>
+        </div>
+        <h2>Options</h2>
+        <div class="monaco-editor-div-option">
+            <ngx-monaco-diff-editor class="monaco-editor" [options]="options" [originalModel]="originalOptions"
+                [modifiedModel]="modifiedOptions"></ngx-monaco-diff-editor>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col-9">
+                    <p>Possible score: </p>
+                </div>
+                <div class="col-3">
+                    <p>{{ taskDetailsLeft.question_score }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9">
+                    <p>Number of attempts: </p>
+                </div>
+                <div class="col-3">
+                    <p>{{ taskDetailsLeft.answered_total }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9">
+                    <p>Average Score: </p>
+                </div>
+                <div class="col-3">
+                    <p>{{ taskAnalyticsLeft.avgScore }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9">
+                    <p>Task Difficulty Index: </p>
+                </div>
+                <div class="col-3">
+                    <p>{{ taskAnalyticsLeft.itemDifficultyIndex }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9">
+                    <p>Task Difficulty Index Corrected: </p>
+                </div>
+                <div class="col-3">
+                    <p>{{ taskAnalyticsLeft.itemDifficultyIndexCorrected  }}</p>
+                </div>
+            </div>
+                        <div class="row">
+                <div class="col-9">
+                    <p>Task Discrimination Full: </p>
+                </div>
+                <div class="col-3">
+                    <p>{{ taskAnalyticsLeft.itemDiscriminationConceptNode }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9">
+                    <p>Task Discrimination per Concept Node: </p>
+                </div>
+                <div class="col-3">
+                    <p>{{ taskAnalyticsLeft.itemDiscriminationConceptNode }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row">
+                <div class="col-9">
+                    <p>Possible score: </p>
+                </div>
+                <div class="col-3">
+                    <p>{{ taskDetailsRight.question_score }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9">
+                    <p>Number of attempts: </p>
+                </div>
+                <div class="col-3">
+                    <p>{{ taskDetailsRight.answered_total }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9">
+                    <p>Average Score: </p>
+                </div>
+                <div class="col-3">
+                    <p>{{ taskAnalyticsRight.avgScore }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9">
+                    <p>Task Difficulty Index: </p>
+                </div>
+                <div class="col-3">
+                    <p>{{ taskAnalyticsRight.itemDifficultyIndex }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9">
+                    <p>Task Difficulty Index Corrected: </p>
+                </div>
+                <div class="col-3">
+                    <p>{{ taskAnalyticsRight.itemDifficultyIndexCorrected  }}</p>
+                </div>
+            </div>
+                        <div class="row">
+                <div class="col-9">
+                    <p>Task Discrimination Full: </p>
+                </div>
+                <div class="col-3">
+                    <p>{{ taskAnalyticsRight.itemDiscriminationFull }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9">
+                    <p>Task Discrimination per Concept Node: </p>
+                </div>
+                <div class="col-3">
+                    <p>{{ taskAnalyticsRight.itemDiscriminationConceptNode }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

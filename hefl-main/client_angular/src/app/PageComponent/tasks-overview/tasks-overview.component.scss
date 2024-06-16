@@ -1,0 +1,24 @@
+#task-details-div {
+    display: none;
+}
+
+.id-column,
+.mcquestion_id-column {
+    display: none;
+}
+
+.bottom-container {
+    display: flex;
+    justify-content: space-between;
+    background: white;
+}
+
+:host ::ng-deep .mat-mdc-tab-body-content {
+    overflow: unset;
+}
+
+.tooltip-icon {
+    position: absolute;
+    display: flex;
+    justify-content: end;
+}

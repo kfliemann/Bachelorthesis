@@ -1,0 +1,136 @@
+<div class="container-fluid task-details-inner-div">
+    <div class="row header justify-content-between">
+        <div class="col">
+            <div class="row" id="task-details-row">
+                <div class="col">
+                    <div class="row">
+                        <div class="col" id="task-details-inner">
+                            <h1>Task-Details</h1>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="details-container">
+                                        <span id="question-id" style="display: none;">
+                                            {{taskDetails.mcQuestion_id}}</span>
+                                        <h2 id="question_name">{{ taskDetails.question_name }}</h2>
+                                        <h4 id="question_text">{{ taskDetails.question_text }}</h4>
+                                    </div>
+                                    <div class="details-container">
+                                        <p>Concept Node:</p>
+                                        <h4 id="conceptNode_name">{{ taskDetails.conceptNode_name }}</h4>
+                                    </div>
+                                    <div id="question_score" class="details-container">
+                                        <p>Question Score:</p>
+                                        <h4>{{ taskDetails.question_score }}</h4>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div>
+                                        <div class="row row-head">
+                                            <div class="col">
+                                                <h2>Task difficulty:</h2>
+                                            </div>
+                                            <div class="col tooltip-icon">
+                                                <button mat-icon-button [matTooltip]=itemDifficultyDescription>
+                                                    <mat-icon>help</mat-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="">
+                                            <div class="difficultyProgressBar" *ngIf="this.taskDetails.questionAnalyticsObj.isEmpty !== true"
+                                                [style.width.%]="this.taskDetails.questionAnalyticsObj.itemDifficultyIndex*2">
+                                                <p>{{ this.taskDetails.questionAnalyticsObj.itemDifficultyIndex }}</p>
+                                            </div>
+                                            <div class="gradient-background">
+                                                <div class="itemDifficultyBorder" *ngIf="this.taskDetails.questionAnalyticsObj.isEmpty !== true"
+                                                    [style.width.%]="this.taskDetails.questionAnalyticsObj.itemDifficultyIndex">
+                                                </div>
+                                                <div *ngIf="this.taskDetails.question_type === 'SC' && this.taskDetails.questionAnalyticsObj.isEmpty !== true" class="itemDifficultyBorder" 
+                                                    [style.width.%]="this.taskDetails.questionAnalyticsObj.itemDifficultyIndexCorrected">
+                                                </div>
+                                            </div>
+                                            <div *ngIf="this.taskDetails.question_type === 'SC' && this.taskDetails.questionAnalyticsObj.isEmpty !== true"
+                                                class="difficultyProgressBar" id="difficultyProgressBarBottom"
+                                                [style.width.%]="this.taskDetails.questionAnalyticsObj.itemDifficultyIndexCorrected*2">
+                                                <p>{{ this.taskDetails.questionAnalyticsObj.itemDifficultyIndexCorrected
+                                                    }}</p>
+                                            </div>
+
+                                            <div class="scaleData">
+                                                <p>Very difficult</p>
+                                                <p>Very easy</p>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <h2>Task Standard Deviation: {{ this.taskDetails.questionAnalyticsObj.itemStandardDeviation
+                                                }}
+                                            </h2>
+                                            <h2>Average Score: {{ this.taskDetails.questionAnalyticsObj.avgScore
+                                                }}
+                                            </h2>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="row row-head">
+                                <div class="col-4">
+                                    <canvas id="taskStatsChart">{{ taskStatsChart }}</canvas>
+                                </div>
+                                <div class="col-4">
+                                    <canvas id="mcOptionChart">{{ mcOptionChart }}</canvas>
+                                </div>
+                                <div class="col-4">
+                                    <canvas id="taskDiscriminationChart">{{ taskDiscriminationChart }}</canvas>
+                                </div>
+                                <div class="tooltip-icon">
+                                    <button class="your-tooltip-class" mat-icon-button [matTooltip]=analyticsChartsExpl>
+                                        <mat-icon>help</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                            <div *ngIf="this.taskDetails.questionAnalyticsObj.isEmpty">
+                                <h1>No data available. Approve this question and/or wait for students to answer this
+                                    question.</h1>
+                            </div>
+                        </div>
+                        <div class="col-auto" id="edit-button">
+                            <div class="row">
+                                <button id="closeDetailsButton" mat-raised-button color="primary"
+                                    (click)="closeDetails()">Close</button>
+                            </div>
+                            <div class="row">
+                                <button mat-raised-button color="primary" (click)="editDetails()"
+                                    [disabled]="editDisable">Edit</button>
+                            </div>
+                            <div class="row">
+                                <button mat-raised-button color="primary" (click)="approveQuestion()"
+                                    [disabled]="approveDisable">Approve Question</button>
+                            </div>
+                            <div class="row">
+                                <label class="versionLabel text-center" for="versionSelect">Choose a version:</label>
+                                <select id="versionSelect" [(ngModel)]="taskDetails.selected_version"
+                                    (ngModelChange)="onVersionChange()">
+                                    <ng-container *ngFor="let version of taskDetails.versions">
+                                        <option [ngValue]="version.version"
+                                            [selected]="version.version === taskDetails.question_version">
+                                            {{ version.version }}
+                                            <span *ngIf="version.isApproved">&#10004;</span>
+                                        </option>
+                                    </ng-container>
+                                </select>
+                            </div>
+                            <div class="row">
+                                <button id="openCompareButton" mat-raised-button color="primary"
+                                    (click)="openCompare()">Compare Versions</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <app-task-details-edit #taskDetailsEdit (mcQuestionIdChanged)="refreshView($event)">
+            </app-task-details-edit>
+            <app-task-details-compare #taskDetailsCompare></app-task-details-compare>
+        </div>
+    </div>
+</div>
